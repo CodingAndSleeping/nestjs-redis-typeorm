@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Session } from '@nestjs/common';
 import { UserService } from './user.service';
-import * as session from 'express-session';
+// import * as session from 'express-session';
 import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('user')
