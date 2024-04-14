@@ -18,7 +18,7 @@ export class ArticleService {
     });
   }
 
-  async viewArticle(id: number) {
+  async viewArticle(id: number, userId: string) {
     const viewCount = await this.redisService.hashGet(
       `article_${id}`,
       'viewCount',
@@ -41,13 +41,43 @@ export class ArticleService {
         likeCount: article.likeCount,
         collectCount: article.collectCount,
       });
+
+      await this.redisService.set(`user_${userId}_article_${id}`, 1, 300);
+
       return article.viewCount;
+    }
+
+    const flag = await this.redisService.get(`user_${userId}_article_${id}`);
+
+    if (flag) {
+      return Number(viewCount);
     }
 
     await this.redisService.hashSet(`article_${id}`, {
       viewCount: Number(viewCount) + 1,
     });
 
+    await this.redisService.set(`user_${userId}_article_${id}`, 1, 300);
+
     return Number(viewCount) + 1;
+  }
+
+  async flushRedisToDB() {
+    const keys = await this.redisService.keys('article_*');
+
+    for (const key of keys) {
+      const viewCount = await this.redisService.hashGet(key, 'viewCount');
+
+      const [, id] = key.split('_');
+
+      await this.articleRepository.update(
+        {
+          id: Number(id),
+        },
+        {
+          viewCount: Number(viewCount),
+        },
+      );
+    }
   }
 }

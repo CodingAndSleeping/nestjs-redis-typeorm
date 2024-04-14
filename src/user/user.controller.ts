@@ -10,12 +10,10 @@ export class UserController {
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDto, @Session() session) {
     const user = await this.userService.login(loginUserDto);
-    console.log(session);
     session.user = {
       id: user.id,
       username: user.username,
     };
-
     return 'success';
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Req, Session } from '@nestjs/common';
 import { ArticleService } from './article.service';
 
 @Controller('article')
@@ -11,7 +11,11 @@ export class ArticleController {
   }
 
   @Get('view/:id')
-  async viewArticle(@Param('id') id: number) {
-    return await this.articleService.viewArticle(id);
+  async viewArticle(@Param('id') id: number, @Session() session, @Req() req) {
+    console.log(session);
+    return await this.articleService.viewArticle(
+      id,
+      session?.user?.id || req.ip,
+    );
   }
 }

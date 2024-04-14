@@ -7,6 +7,13 @@ export class RedisService {
   private redisClient: RedisClientType;
 
   /**
+   * 封装 keys方法
+   */
+  async keys(pattern: string) {
+    return await this.redisClient.keys(pattern);
+  }
+
+  /**
    * 封装get方法
    */
   async get(key: string) {
@@ -16,7 +23,7 @@ export class RedisService {
   /**
    * 封装set方法
    */
-  async set(key: string, value: string, expireTime?: number) {
+  async set(key: string, value: string | number, expireTime?: number) {
     await this.redisClient.set(key, value);
 
     if (expireTime) {

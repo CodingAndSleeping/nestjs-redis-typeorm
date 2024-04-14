@@ -7,10 +7,13 @@ import { ArticleModule } from './article/article.module';
 import { User } from './user/entities/user.entity';
 import { Article } from './article/entities/article.entity';
 import { RedisModule } from './redis/redis.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
+      // connect to mysql database
       type: 'mysql',
       host: 'localhost',
       port: 3306,
@@ -26,9 +29,11 @@ import { RedisModule } from './redis/redis.module';
         authPlugin: 'sha256_password',
       },
     }),
-    UserModule,
-    ArticleModule,
-    RedisModule,
+    RedisModule, // connect to redis database
+    ScheduleModule.forRoot(), // schedule tasks
+    UserModule, // register user module
+    ArticleModule, // register article module
+    TaskModule, // register task module
   ],
   controllers: [AppController],
   providers: [AppService],
